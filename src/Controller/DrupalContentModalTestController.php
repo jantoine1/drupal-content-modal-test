@@ -1,13 +1,13 @@
 <?php
 
-namespace Drupal\test\Controller;
+namespace Drupal\drupal_content_modal_test\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 
 /**
  * DakotaLogACallController class.
  */
-class TestController extends ControllerBase {
+class DrupalContentModalTestController extends ControllerBase {
 
   /**
    * {@inheritdoc}

@@ -1,7 +1,7 @@
 test.test:
   path: '/test'
   defaults:
-    _controller: '\Drupal\test\Controller\TestController::test'
+    _controller: '\Drupal\drupal_content_modal_test\Controller\DrupalContentModalTestController::test'
     _title: 'Test'
   requirements:
     _permission: 'access content'

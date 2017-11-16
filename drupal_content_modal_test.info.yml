@@ -1,5 +1,5 @@
-name: Test
+name: Drupal Content Modal Test
 type: module
 hidden: false
-description: "Test node form in modal."
+description: "Test the node add form in a modal."
 core: 8.x

@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Drupal hook implementations for the Test module.
+ * Drupal hook implementations for the Drupal Content Modal Test module.
  */
 
 use Drupal\Core\Ajax\AjaxResponse;
@@ -15,9 +15,9 @@ use Drupal\Core\Form\FormStateInterface;
  *
  * Alters the node_article_form form.
  */
-function test_form_node_article_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+function drupal_content_modal_test_form_node_article_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   // Provide a wrapper for ajax replacement.
-  $form['#prefix'] = '<div id="test_node_article_form">';
+  $form['#prefix'] = '<div id="drupal-content-modal-test-node-article-form">';
   $form['#suffix'] = '</div>';
 
   // Provide a form element that will contain any form errors.
@@ -37,12 +37,14 @@ function test_form_node_article_form_alter(&$form, FormStateInterface $form_stat
   foreach ($form['actions'] as &$action) {
     if (isset($action['#type']) && $action['#type'] === 'submit') {
       // @todo The #dropbutton property breaks ajax.
-      unset($action['#dropbutton']);
+      if (array_key_exists('#dropbutton', $action)) {
+        unset($action['#dropbutton']);
+      }
 
       // Add ajax to the action.
       $action['#ajax'] = [
-        'callback' => '_test_node_article_form_ajax_submit',
-        'wrapper' => 'test_node_article_form',
+        'callback' => '_drupal_content_modal_test_node_article_form_ajax_submit',
+        'wrapper' => 'drupal-content-modal-test-node-article-form',
       ];
     }
   }
@@ -54,14 +56,14 @@ function test_form_node_article_form_alter(&$form, FormStateInterface $form_stat
 /**
  * Handles submission of the node article modal form via ajax.
  */
-function _test_node_article_form_ajax_submit(array $form, FormStateInterface $form_state) {
-  return _test_form_ajax_submit($form, $form_state, '#test_node_article_form');
+function _drupal_content_modal_test_node_article_form_ajax_submit(array $form, FormStateInterface $form_state) {
+  return _drupal_content_modal_test_form_ajax_submit($form, $form_state, '#drupal-content-modal-test-node-article-form');
 }
 
 /**
  * Handles submission of modal forms via ajax.
  */
-function _test_form_ajax_submit(array $form, FormStateInterface $form_state, $wrapper) {
+function _drupal_content_modal_test_form_ajax_submit(array $form, FormStateInterface $form_state, $wrapper) {
   $response = new AjaxResponse();
 
   // Handle the submit button.
