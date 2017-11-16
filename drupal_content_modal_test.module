@@ -1,0 +1,86 @@
+<?php
+
+/**
+ * @file
+ * Drupal hook implementations for the Test module.
+ */
+
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\CloseModalDialogCommand;
+use Drupal\Core\Ajax\ReplaceCommand;
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Alters the node_article_form form.
+ */
+function test_form_node_article_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  // Provide a wrapper for ajax replacement.
+  $form['#prefix'] = '<div id="test_node_article_form">';
+  $form['#suffix'] = '</div>';
+
+  // Provide a form element that will contain any form errors.
+  $form['status_messages'] = [
+    '#type' => 'status_messages',
+    '#weight' => -50,
+  ];
+
+  // Add a cancel button.
+  $form['actions']['cancel'] = [
+    '#type' => 'submit',
+    '#value' => t('Cancel'),
+    '#weight' => -5,
+  ];
+
+  // For each action.
+  foreach ($form['actions'] as &$action) {
+    if (isset($action['#type']) && $action['#type'] === 'submit') {
+      // @todo The #dropbutton property breaks ajax.
+      unset($action['#dropbutton']);
+
+      // Add ajax to the action.
+      $action['#ajax'] = [
+        'callback' => '_test_node_article_form_ajax_submit',
+        'wrapper' => 'test_node_article_form',
+      ];
+    }
+  }
+
+  // Attach the ajax library to the form.
+  $form['#attached']['library'][] = 'core/drupal.dialog.ajax';
+}
+
+/**
+ * Handles submission of the node article modal form via ajax.
+ */
+function _test_node_article_form_ajax_submit(array $form, FormStateInterface $form_state) {
+  return _test_form_ajax_submit($form, $form_state, '#test_node_article_form');
+}
+
+/**
+ * Handles submission of modal forms via ajax.
+ */
+function _test_form_ajax_submit(array $form, FormStateInterface $form_state, $wrapper) {
+  $response = new AjaxResponse();
+
+  // Handle the submit button.
+  if ($form_state->getTriggeringElement()['#value']->getUntranslatedString() !== 'Cancel') {
+    if ($form_state->hasAnyErrors()) {
+      // Re-display the form if there are any form errors.
+      $response->addCommand(new ReplaceCommand($wrapper, $form));
+    }
+    else {
+      // Display any form messages to the user.
+      $response->addCommand(new ReplaceCommand($wrapper, $form['status_messages']));
+    }
+  }
+  // Handle the cancel button.
+  else {
+    // Remove any messages and close the modal.
+    drupal_get_messages(NULL, TRUE);
+    $response->addCommand(new CloseModalDialogCommand());
+  }
+
+  return $response;
+}

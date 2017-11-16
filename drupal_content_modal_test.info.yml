@@ -1,0 +1,5 @@
+name: Test
+type: module
+hidden: false
+description: "Test node form in modal."
+core: 8.x
